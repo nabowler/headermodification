@@ -37,7 +37,11 @@ func (t Transport) RoundTrip(req *http.Request) (*http.Response, error) {
 		return base.RoundTrip(req)
 	}
 
-	req2 := cloneRequest(req) // per RoundTripper contract
+	// per RoundTripper contract
+	// > RoundTrip should not modify the request, except for
+	// > consuming and closing the Request's Body.
+	// modifying a clone of the request seems to be an allowed loophole
+	req2 := cloneRequest(req)
 
 	ModifyHeaders(req2, set, add)
 
