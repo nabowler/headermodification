@@ -26,4 +26,4 @@ jobs:
       
     - name: Run golangci-lint
       uses: golangci/golangci-lint-action@v2.5.2
-      args: --enable=misspell,unconvert,gofmt
+      #args: --enable=misspell,unconvert,gofmt
