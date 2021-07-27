@@ -34,6 +34,7 @@ func TestIntegration(t *testing.T) {
 	if err != nil {
 		t.Fatal(err.Error())
 	}
+	req.Header.Set("User-Agent", "this should be overwritten")
 
 	resp, err := client.Do(req)
 	if err != nil {
