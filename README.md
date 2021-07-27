@@ -20,10 +20,10 @@ func main() {
         Add: http.Header{"X-Custom-1": []string{"some custom header"}},
     }
 
-	client := http.Client{
-		Transport: transport,
-		Timeout:   30 * time.Second,
-	}
+    client := http.Client{
+        Transport: transport,
+        Timeout:   30 * time.Second,
+    }
 
     api(client)
 }
@@ -31,14 +31,14 @@ func main() {
 
 func api(client http.Client) {
     req, err := http.NewRequestWithContext(context.TODO(), http.MethodGet, "https://example.com", nil)
-	if err != nil {
-		// TODO
-	}
+    if err != nil {
+        // TODO
+    }
 
-	resp, err := client.Do(req)
-	if err != nil {
-		// TODO
-	}
-	defer resp.Body.Close()
+    resp, err := client.Do(req)
+    if err != nil {
+        // TODO
+    }
+    defer resp.Body.Close()
 }
 ```
