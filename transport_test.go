@@ -56,7 +56,7 @@ func TestTransport(t *testing.T) {
 	}
 }
 
-func TestModify(t *testing.T) {
+func TestModifyRequestHeaders(t *testing.T) {
 	for _, tc := range testcases(t) {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
@@ -79,7 +79,7 @@ func TestModify(t *testing.T) {
 				expected = tc.expected()
 			}
 
-			headermodification.ModifyHeaders(req, set, add)
+			headermodification.ModifyRequestHeaders(req, set, add)
 			actual := req.Header
 
 			if !reflect.DeepEqual(expected, actual) {
@@ -113,6 +113,22 @@ type testcase struct {
 
 func testcases(t *testing.T) []testcase {
 	return []testcase{
+		{
+			name: "nothing configured",
+		},
+		{
+			name: "nothing configured with initial",
+			initial: func() http.Header {
+				h := http.Header{}
+				h.Add("zero_key", "zero_val")
+				return h
+			},
+			expected: func() http.Header {
+				h := http.Header{}
+				h.Add("zero_key", "zero_val")
+				return h
+			},
+		},
 		{
 			name: "add to empty",
 			add: func() http.Header {

@@ -43,17 +43,17 @@ func (t Transport) RoundTrip(req *http.Request) (*http.Response, error) {
 	// modifying a clone of the request seems to be an allowed loophole
 	req2 := cloneRequest(req)
 
-	ModifyHeaders(req2, set, add)
+	ModifyRequestHeaders(req2, set, add)
 
 	return base.RoundTrip(req2)
 }
 
-// ModifyHeaders directly modifies the supplied request's headers.
+// ModifyRequestHeaders directly modifies the supplied request's headers.
 // Existing headers will be overwritten with the values in set.
 // Existing headers, including those set here, will be appeneded to
 // with the values in add.
 // Headers that are not in set or add will remain unmodified.
-func ModifyHeaders(req *http.Request, set, add http.Header) {
+func ModifyRequestHeaders(req *http.Request, set, add http.Header) {
 	for k, vs := range set {
 		if len(vs) == 0 {
 			continue
