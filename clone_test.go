@@ -17,34 +17,34 @@ func TestClone(t *testing.T) {
 	ctx := context.WithValue(context.Background(), key, value)
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, "https://example.com", io.NopCloser(strings.NewReader("body")))
 	if err != nil {
-		t.Fatalf(err.Error())
+		t.Fatal(err.Error())
 	}
 
 	clone := cloneRequest(req)
 
 	if clone == nil {
-		t.Fatalf("clone is nil")
+		t.Fatal("clone is nil")
 	}
 
 	if req == clone {
 		// clone must not point to the same object
-		t.Errorf("req and clone point to the same request")
+		t.Error("req and clone point to the same request")
 	}
 
 	if req.Method != clone.Method {
-		t.Errorf("methods are different")
+		t.Error("methods are different")
 	}
 	if req.URL != clone.URL {
-		t.Errorf("urls are different")
+		t.Error("urls are different")
 	}
 	if req.Body != clone.Body {
-		t.Errorf("bodies are different")
+		t.Error("bodies are different")
 	}
 	if !reflect.DeepEqual(req.Header, clone.Header) {
-		t.Errorf("headers are not deeply equal")
+		t.Error("headers are not deeply equal")
 	}
 	if req.Context() != clone.Context() {
-		t.Errorf("contexts are different")
+		t.Error("contexts are different")
 	}
 
 	// many of the above checks are probably also covered by this

@@ -11,6 +11,9 @@ import (
 	"github.com/nabowler/headermodification"
 )
 
+const useragent = "headermodification_testintegration"
+const custom = "this is a custom value"
+
 func TestIntegration(t *testing.T) {
 	if testing.Short() {
 		t.Skip("Skipping because the -test.short flag is set")
@@ -30,6 +33,37 @@ func TestIntegration(t *testing.T) {
 		Timeout:   30 * time.Second,
 	}
 
+	testRequest(t, client)
+}
+
+func TestGlobalIntegration(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping because the -test.short flag is set")
+	}
+
+	// best effort to restore global state
+	originalDefault := http.DefaultTransport
+	t.Cleanup(func() {
+		http.DefaultTransport = originalDefault
+	})
+
+	transport := headermodification.Transport{
+		Base: http.DefaultTransport,
+		// the headers have been pre-canonicalized for this test
+		Add: http.Header{"X-Custom-1": []string{custom}},
+		Set: http.Header{"User-Agent": []string{useragent}},
+	}
+	http.DefaultTransport = transport
+
+	// client will default to http.DefaultTransport when performing the request
+	client := http.Client{
+		Timeout: 30 * time.Second,
+	}
+
+	testRequest(t, client)
+}
+
+func testRequest(t *testing.T, client http.Client) {
 	req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, "https://httpbin.org/headers", nil)
 	if err != nil {
 		t.Fatal(err.Error())
@@ -57,19 +91,19 @@ func TestIntegration(t *testing.T) {
 	ua, ok := response.Headers["User-Agent"]
 	if ok {
 		if useragent != ua {
-			t.Fatalf("Unexpected user-agent header: %s", ua)
+			t.Errorf("Unexpected user-agent header: %s", ua)
 		}
 	} else {
-		t.Fatal("User-Agent header not found in response")
+		t.Error("User-Agent header not found in response")
 	}
 
 	c, ok := response.Headers["X-Custom-1"]
 	if ok {
 		if custom != c {
-			t.Fatalf("Unexpected X-Custom-1 header: %s", c)
+			t.Errorf("Unexpected X-Custom-1 header: %s", c)
 		}
 	} else {
-		t.Fatal("X-Custom-1 header not found in response")
+		t.Error("X-Custom-1 header not found in response")
 	}
 
 	if t.Failed() {
